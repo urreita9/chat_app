@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { generateJWT } = require('../helpers/jwt');
 const User = require('../models/user');
+
 const createUser = async (req, res) => {
 	try {
 		const { email, password } = req.body;
@@ -22,7 +23,7 @@ const createUser = async (req, res) => {
 		//Generate JWT
 		const token = await generateJWT(user.id);
 
-		res.json({ user, token });
+		res.json({ ok: true, user, token });
 	} catch (error) {
 		console.log(error);
 		res
@@ -33,11 +34,52 @@ const createUser = async (req, res) => {
 
 const loginUser = async (req, res) => {
 	const { email, password } = req.body;
-	res.json({ ok: true, email, password });
+
+	try {
+		const userDb = await User.findOne({ email });
+
+		if (!userDb) {
+			return res.status(404).json({ msg: 'Email or Password are incorrect' });
+		}
+
+		const validPassword = bcrypt.compareSync(password, userDb.password);
+
+		if (!validPassword) {
+			return res.status(404).json({ msg: 'Email or Password are incorrect' });
+		}
+
+		//Generate JWT
+
+		const token = await generateJWT(userDb.id);
+
+		res.json({ ok: true, user: userDb, token });
+	} catch (error) {
+		console.log(error);
+		res
+			.status(500)
+			.json({ ok: false, msg: 'Error. Please contact the Administrator' });
+	}
 };
 
 const renewToken = async (req, res) => {
-	res.json({ ok: true, msg: 'Renew' });
+	const uid = req.uid;
+
+	try {
+		//New JWT
+
+		const token = await generateJWT(uid);
+
+		//Get user
+
+		const user = await User.findById(uid);
+
+		res.json({ ok: true, user, token });
+	} catch (error) {
+		console.log(error);
+		res
+			.status(500)
+			.json({ ok: false, msg: 'Error. Please contact the Administrator' });
+	}
 };
 
 module.exports = { createUser, loginUser, renewToken };

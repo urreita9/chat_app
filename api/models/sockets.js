@@ -1,31 +1,22 @@
-
-
 class Sockets {
+	constructor(io) {
+		this.io = io;
 
-    constructor( io ) {
+		this.socketEvents();
+	}
 
-        this.io = io;
-
-        this.socketEvents();
-    }
-
-    socketEvents() {
-        // On connection
-        this.io.on('connection', ( socket ) => {
-
-            // Escuchar evento: mensaje-to-server
-            socket.on('mensaje-to-server', ( data ) => {
-                console.log( data );
-                
-                this.io.emit('mensaje-from-server', data );
-            });
-            
-        
-        });
-    }
-
-
+	socketEvents() {
+		// On connection
+		this.io.on('connection', (socket) => {
+			//Validate JWT
+			// No token? OUT
+			// Active User with uid
+			//Emit all active users
+			// Socket join, uid
+			//Listen on client messages
+			//Handle disconnect
+		});
+	}
 }
-
 
 module.exports = Sockets;
