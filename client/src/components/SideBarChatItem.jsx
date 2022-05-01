@@ -8,7 +8,7 @@ export const SideBarChatItem = () => {
 			<div className='chat_people'>
 				<div className='chat_img'>
 					<img
-						src='https://ptetutorials.com/images/user-profile.png'
+						src=' https://cdn-icons-png.flaticon.com/512/147/147144.png'
 						alt='sunil'
 					/>
 				</div>
