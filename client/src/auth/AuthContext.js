@@ -26,7 +26,6 @@ export const AuthProvider = ({ children }) => {
 				name: res.user.name,
 				email: res.user.email,
 			});
-			console.log('authenticated');
 		}
 
 		return res.ok;
@@ -37,7 +36,7 @@ export const AuthProvider = ({ children }) => {
 			{ email, password, name },
 			'POST'
 		);
-		console.log('RES REGISTER', res);
+
 		if (res.ok) {
 			localStorage.setItem('token', res.token);
 			setAuth({
