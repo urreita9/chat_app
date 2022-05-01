@@ -1,5 +1,5 @@
 import React, { createContext, useCallback, useState } from 'react';
-import { fetchNoToken } from '../helpers/fetch';
+import { fetchNoToken, fetchWithToken } from '../helpers/fetch';
 
 export const AuthContext = createContext();
 
@@ -16,14 +16,82 @@ export const AuthProvider = ({ children }) => {
 
 	const login = async (email, password) => {
 		const res = await fetchNoToken('login', { email, password }, 'POST');
-		console.log(res);
+
+		if (res.ok) {
+			localStorage.setItem('token', res.token);
+			setAuth({
+				uid: res.user.uid,
+				checking: false,
+				logged: true,
+				name: res.user.name,
+				email: res.user.email,
+			});
+			console.log('authenticated');
+		}
+
+		return res.ok;
 	};
-	const register = (email, password) => {};
-	const verifyToken = useCallback(() => {}, []);
+	const register = async (email, password, name) => {
+		const res = await fetchNoToken(
+			'login/new',
+			{ email, password, name },
+			'POST'
+		);
+		console.log('RES REGISTER', res);
+		if (res.ok) {
+			localStorage.setItem('token', res.token);
+			setAuth({
+				uid: res.user.uid,
+				checking: false,
+				logged: true,
+				name: res.user.name,
+				email: res.user.email,
+			});
+			return true;
+		}
+		return res.msg;
+	};
+	const verifyToken = useCallback(async () => {
+		const token = localStorage.getItem('token');
+		if (!token) {
+			setAuth({
+				uid: null,
+				checking: false,
+				logged: false,
+				name: null,
+				email: null,
+			});
+			return false;
+		}
+		const res = await fetchWithToken('login/renew');
+
+		if (res.ok) {
+			localStorage.setItem('token', res.token);
+			setAuth({
+				uid: res.user.uid,
+				checking: false,
+				logged: true,
+				name: res.user.name,
+				email: res.user.email,
+			});
+			return true;
+		} else {
+			setAuth({
+				uid: null,
+				checking: false,
+				logged: false,
+				name: null,
+				email: null,
+			});
+			return false;
+		}
+	}, []);
 	const logout = () => {};
 
 	return (
-		<AuthContext.Provider value={{ login, register, logout, verifyToken }}>
+		<AuthContext.Provider
+			value={{ auth, login, register, logout, verifyToken }}
+		>
 			{children}
 		</AuthContext.Provider>
 	);

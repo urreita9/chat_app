@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { AuthContext } from '../auth/AuthContext';
 
 export const LoginPage = () => {
@@ -12,7 +13,7 @@ export const LoginPage = () => {
 	useEffect(() => {
 		const email = localStorage.getItem('email');
 		if (email) {
-			setForm({ ...form, email, rememberMe: true });
+			setForm((form) => ({ ...form, email, rememberMe: true }));
 		}
 	}, []);
 
@@ -25,7 +26,7 @@ export const LoginPage = () => {
 		setForm({ ...form, rememberMe: !form.rememberMe });
 	};
 
-	const handleSubmit = (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
 
 		form.rememberMe
@@ -33,14 +34,27 @@ export const LoginPage = () => {
 			: localStorage.removeItem('email');
 
 		const { email, password } = form;
-		login(email, password);
+		const ok = await login(email, password);
+
+		if (!ok) {
+			Swal.fire('Error', 'Wrong email or password', 'error');
+		}
+	};
+
+	const everythingOk = () => {
+		return form.email.length > 0 &&
+			form.email.trim().length > 0 &&
+			form.password.length > 0 &&
+			form.password.trim().length > 0
+			? true
+			: false;
 	};
 	return (
 		<form
 			className='login100-form validate-form flex-sb flex-w'
 			onSubmit={handleSubmit}
 		>
-			<span className='login100-form-title mb-3'>Chat - Ingreso</span>
+			<span className='login100-form-title mb-3'>Chat - Login</span>
 
 			<div className='wrap-input100 validate-input mb-3'>
 				<input
@@ -77,18 +91,24 @@ export const LoginPage = () => {
 						readOnly
 						checked={form.rememberMe}
 					/>
-					<label className='label-checkbox100'>Recordarme</label>
+					<label className='label-checkbox100'>Remember Me</label>
 				</div>
 
 				<div className='col text-right'>
 					<Link to='/auth/register' className='txt1'>
-						Nueva cuenta?
+						New account?
 					</Link>
 				</div>
 			</div>
 
 			<div className='container-login100-form-btn m-t-17'>
-				<button className='login100-form-btn'>Ingresar</button>
+				<button
+					className='login100-form-btn'
+					type='submit'
+					disabled={!everythingOk()}
+				>
+					Login
+				</button>
 			</div>
 		</form>
 	);
