@@ -22,4 +22,15 @@ const generateJWT = (uid) => {
 	});
 };
 
-module.exports = { generateJWT };
+const verifyJWT = (token = '') => {
+	try {
+		const { uid } = jwt.verify(token, process.env.SECRET_OR_PRIVATE_KEY);
+
+		return [true, uid];
+	} catch (error) {
+		console.log(error);
+		return [false, null];
+	}
+};
+
+module.exports = { generateJWT, verifyJWT };
