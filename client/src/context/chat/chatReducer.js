@@ -1,6 +1,16 @@
+import { GET_USERS } from '../../types/types';
+
 export const chatReducer = (state, action) => {
-	switch (action.type) {
+	const { type, payload } = action;
+
+	switch (type) {
+		case GET_USERS:
+			return {
+				...state,
+				users: [...payload],
+			};
+
 		default:
-			state;
+			return state;
 	}
 };
