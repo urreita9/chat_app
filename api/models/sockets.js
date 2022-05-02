@@ -2,6 +2,7 @@ const {
 	userConnected,
 	userDisconnected,
 	getUsers,
+	saveMsg,
 } = require('../controllers/sockets');
 const { verifyJWT } = require('../helpers/jwt');
 
@@ -24,10 +25,18 @@ class Sockets {
 			// Active User with uid
 			await userConnected(uid);
 
+			//join user to chat room
+			socket.join(uid);
+
 			//Emit all active users
 
 			this.io.emit('users-list', await getUsers());
-			// Socket join, uid
+
+			socket.on('personal-message', async (payload) => {
+				const message = await saveMsg(payload);
+				console.log(message);
+			});
+
 			//Listen on client messages
 
 			socket.on('disconnect', async () => {

@@ -5,7 +5,7 @@ export const ChatContext = createContext();
 
 const initialState = {
 	uid: '',
-	activeChat: null,
+	activeChat: null, // uid of user that will recieve my messages
 	users: [], // all users
 	messages: [], //selected chat
 };
