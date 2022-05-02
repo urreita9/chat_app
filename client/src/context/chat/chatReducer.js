@@ -1,4 +1,9 @@
-import { GET_USERS, SELECT_CHAT, SET_MESSAGE } from '../../types/types';
+import {
+	GET_USERS,
+	LOAD_MESSAGES,
+	SELECT_CHAT,
+	SET_MESSAGE,
+} from '../../types/types';
 
 // const initialState = {
 // 	uid: '',
@@ -28,6 +33,8 @@ export const chatReducer = (state, action) => {
 			} else {
 				return state;
 			}
+		case LOAD_MESSAGES:
+			return { ...state, messages: [...payload] };
 
 		default:
 			return state;
