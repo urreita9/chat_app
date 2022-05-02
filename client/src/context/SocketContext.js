@@ -3,7 +3,7 @@ import { createContext } from 'react';
 import { AuthContext } from '../auth/AuthContext';
 import { ChatContext } from '../context/chat/ChatContext';
 import { useSocket } from '../hooks/useSocket';
-import { GET_USERS } from '../types/types';
+import { GET_USERS, SET_MESSAGE } from '../types/types';
 
 export const SocketContext = createContext();
 
@@ -32,6 +32,15 @@ export const SocketProvider = ({ children }) => {
 			dispatch({
 				type: GET_USERS,
 				payload: users,
+			});
+		});
+	}, [socket, dispatch]);
+
+	useEffect(() => {
+		socket?.on('personal-message', (message) => {
+			dispatch({
+				type: SET_MESSAGE,
+				payload: message,
 			});
 		});
 	}, [socket, dispatch]);

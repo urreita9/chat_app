@@ -34,7 +34,8 @@ class Sockets {
 
 			socket.on('personal-message', async (payload) => {
 				const message = await saveMsg(payload);
-				console.log(message);
+				this.io.to(payload.to).emit('personal-message', message);
+				this.io.to(payload.from).emit('personal-message', message);
 			});
 
 			//Listen on client messages
